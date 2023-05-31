@@ -8,7 +8,7 @@ ScreenShots have been attached.
 
 Download necessary packages in package.json using 'npm i' command.
 
-If dependency conflicts, copy the libraries used and delete the package.json
+If dependency conflicts, copy the packages used and delete the package.json
 
 Create a new one using npm init on the file and install the libraries.
 
