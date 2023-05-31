@@ -1,0 +1,75 @@
+
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+/**
+ * Servlet implementation class RetrieveUser
+ */
+public class RetrieveUser extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public RetrieveUser() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		response.addHeader("Access-Control-Allow-Origin","*");
+		response.setContentType("application/json");
+		PrintWriter pw=response.getWriter();
+		try {
+			Connection cn=DB_Connector.getDbConnection();
+			Statement st = cn.createStatement();
+			ResultSet rs=st.executeQuery("select * from users");
+			
+			JSONArray jsonArray = new JSONArray();
+			
+			while (rs.next()) {
+	            JSONObject jsonObject = new JSONObject();
+	            jsonObject.put("Name", rs.getString("name"));
+	            jsonObject.put("Mail", rs.getString("mail"));
+	            jsonObject.put("Contact", rs.getString("contact"));
+	            
+	            jsonArray.put(jsonObject);
+	        }
+	        
+	        pw.print(jsonArray.toString()); 
+			
+		}
+		catch(Exception e) {
+			JSONObject jo=new JSONObject();
+			jo.put("status", "failed");
+			jo.put("Exception", e);
+			pw.print(jo.toString());	
+		}
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+
+}

@@ -1,0 +1,8 @@
+.addbooks {
+  background: url('../components/g.gif') no-repeat ;
+ 
+  background-size: cover;
+      min-height: 100vh;
+      width: 1500px;
+}
+

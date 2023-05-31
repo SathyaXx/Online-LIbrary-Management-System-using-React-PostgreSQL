@@ -1,0 +1,73 @@
+
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+import org.json.JSONObject;
+
+/**
+ * Servlet implementation class UserLogin
+ */
+public class UserLogin extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public UserLogin() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String mail = request.getParameter("email");
+		String pass = request.getParameter("upass");
+		HttpSession ses = request.getSession();
+		response.addHeader("Access-Control-Allow-Origin","*");
+		PrintWriter pw = response.getWriter();
+		Boolean done = false;
+		try {
+			Connection cn=DB_Connector.getDbConnection();
+			Statement st=cn.createStatement();
+			ResultSet rs = st.executeQuery("select * from users where mail='"+mail+"' and pass='"+pass+"'");
+			if(rs.next()) {
+					JSONObject jo = new JSONObject();
+					jo.put("status", "success");
+					pw.print(jo.toString());
+					done=true;
+			}
+			if(done == false) {
+				JSONObject jo = new JSONObject();
+				jo.put("status", "failed");
+				pw.print(jo.toString());
+			}
+		}catch(Exception e) {
+			JSONObject jo = new JSONObject();
+			jo.put("status", "failed");
+			jo.put("Exception", e);
+			pw.print(jo.toString());
+		} 
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+
+}

@@ -1,0 +1,79 @@
+
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+import org.json.JSONObject;
+
+/**
+ * Servlet implementation class UserInsert
+ */
+public class UserInsert extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public UserInsert() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String name= request.getParameter("uname");
+		String mail= request.getParameter("email");
+		String contact = request.getParameter("contact");
+		String pass= request.getParameter("pass");
+		
+		response.addHeader("Access-Control-Allow-Origin","*");
+		PrintWriter pw=response.getWriter();
+		try {
+			Connection cn=DB_Connector.getDbConnection();
+			Statement st = cn.createStatement();
+			ResultSet rs=st.executeQuery("select * from users where mail='"+mail+"'");
+			if(rs.next()) {
+				JSONObject jo = new JSONObject();
+				jo.put("status", "exists");
+				pw.print(jo.toString());
+			}else {
+			PreparedStatement pst = cn.prepareStatement("insert into users(name,mail,contact,pass) values (?,?,?,?)");
+			pst.setString(1, name);
+			pst.setString(2, mail);
+			pst.setString(3, contact);
+			pst.setString(4, pass);
+			pst.executeUpdate();
+			
+			JSONObject jo=new JSONObject();
+			jo.put("status", "success");
+			pw.print(jo.toString());
+			}
+		}
+		catch(Exception e) {
+			JSONObject jo=new JSONObject();
+			jo.put("status", "failed");
+			jo.put("Exception", e);
+			pw.print(jo.toString());	
+		}
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+
+}

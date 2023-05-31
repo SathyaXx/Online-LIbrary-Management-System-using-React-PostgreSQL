@@ -1,0 +1,20 @@
+//Java Class
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+
+public class DB_Connector {
+	public static Connection getDbConnection() throws ClassNotFoundException {
+		String url = "jdbc:postgresql://localhost:5432/IPProject";
+		String user="postgres";
+		String password="xxxtentacion";
+		Connection cn = null;
+		try {
+			Class.forName("org.postgresql.Driver");
+			cn=DriverManager.getConnection(url,user,password);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return cn;
+	}
+}
